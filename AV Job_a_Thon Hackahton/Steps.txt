@@ -1,0 +1,40 @@
+Code - https://colab.research.google.com/drive/1KnavFBMZfal3FnYdO8SN8XxRqEUGhDqU#scrollTo=bpX6qJsJrPez
+ex solution 1 - https://github.com/Ashufet/AV-JOB-A-THON/blob/main/hi-lead-prediction.ipynb
+ex solution 2 - https://github.com/asingleneuron/hackathons_solution/blob/master/jobathon_2021/magic-notebook-to-reach-80-roc-auc-score.ipynb 
+
+Steps:-
+* Dropping ID column
+
+* In 'City_Code' columns, it is of Object Data type, The values are like C3, C4 etc.
+  we take only the numerical values like out of C3 we take only 3.
+
+* Convert the 'City_Code' dtpye from object to integer.
+
+* 'Accomodation_Type' has 2 unique values - Owned and Rented.
+   Mapping Owned - 0 and Rented - 1
+
+* 'Reco_Insurance_Typehas ' 2 unique values - Individual and Joint
+   Mapping Individual - 0 and Joint- 1
+
+* 'Is_Spouse ' has 2 unique values - No and Yes
+   Mapping No - 0 and Yes - 1
+
+* In 'Health Indicator' column, it is of Object Data type, The values are like X1, X2 etc.
+  we take only the numerical values like from X1 we take only 1.
+
+* In 'Holding_Policy_Duration' column, for all the recors having Holding_Policy_Duration as
+  '14+ ' to 15
+
+After Hyperparameter tuning
+* RFC - 50%
+* XGB - 54%
+
+Try using other ML Models
+Try using standard scalar
+Try improving the accuracy
+Try tweaking the hyperparameters
+Try Clustering and Predicting
+Try stacking
+Try Dropping Region_code
+
+Highest Accuracy - New Approach->Hyperparameter Tunning-> Xgb
