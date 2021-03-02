@@ -54,3 +54,5 @@ Test data is further randomly divided into Public (40%) and Private (60%) data. 
 Public LB : 1595th Rank
 
 Private LB : 1453rd Rank
+
+Highest accuracy Obtained - 0.548464266007268 using XGBClassifier using Hyperparameter Tuning
