@@ -1,0 +1,371 @@
+56911 - total rows
+If a customer's churn rate is 3%, it means that there chances of unsubscribing is 30 %
+
+First We will go through each column and its relationship with churning, then we will see relationship
+between each columns.
+
+1. Concatinating train and test data
+# Train = 1 i.e Belongs to training data and 0 belongs to test data
+
+2. Dropping 'customer_id', 'security_no', 'Name' colummn as it has all unique values
+
+3. In training data, the count of different age groups are same i.e between 600-700
+   whereas, in testing data the count is between  300-400
+
+4. For the training data, majority customers has churn_risk_score 3 or greater than 3, which is bad
+   Training data also has an outlier of churn_risk_score = -1.
+   We replaced all the -1 values by 1
+
+5. The count for no. of males and females is almost same. There are very few whose gender is unknown
+
+6. From this, we can make an assumption that, churn_rate_score > 3 means that there are very high chances of that customer
+   unsubscribing from their services at that moment
+
+7. In village region - around 2K out of 4700 people have churn rate > 3 i.e is around 43%
+   In City region - around 7K out of 12700 have churn rate > 3 i.e is around 55%
+   In Town Region - around 7500 out of 14128 have churn rate > 3 i.e is around 53%
+   *Note - This observation is from Training data only
+   44.8% people are from - Town
+   40.2% people are from - City
+   14.9% people are from - Village
+
+8. Around 23.7% People come in the category having Platinum Memebership and Premiuim Membership
+#  Around 41.7% people come in the category having basic or No Memebership
+#  Around 34.6% people come in the category having Gold or Silver Memebership
+   *Note - This observation is from Training data only
+
+9. Customers having No Membership or Basic Membership have HIGH churn_risk_score of 5
+   Customers having Platinum or Premium Membership have churn_risk_score 3 or less than 3
+   Customers having Gold or Silver Membership have churn_risk_score 3 or 4
+
+From these observation, we can conclude that customers having No Membership or Basic Membership have 
+very high chances of unsubscribing the services. Whereas, Customers having Platinum or Premium Membership 
+have very low chances of unsubscribing the services. 
+
+10. Replacing the '?' in 'joined_through_referral' by checking if it has a 'referral_id' or not.
+    If a customer had a 'referral_id' then we replace '?' in 'joined_through_referral' by a 'Yes'.
+    Like this, we remove all the missing values in 'joined_through_referral' column.
+
+11. About 57.6% people have joined through a referral.
+
+12. Dropping 'referral_id' column has it had a lot of missing values and we anyway have 'joined_through_referral' column to
+    give details, like whether the cutomer had joined through a referral or not.
+
+13. There is equal percentages(33%) of customers enjoying different offers.
+
+14. Customers without offers have a slightly higher chances of having 'churn_risk_score' >=3
+    *Note - This observation is from Training data only
+
+15. Around 45% subscribers are from Town, 40% from City, and, 15% fom Village.
+
+16. In every 'membership_category', majority subscribers are from Town and City.
+
+17. Majority People having 'internet_option' = 'Wi-Fi' has 'medium_of_operation' = 'Desktop', so replacing '?' by 'Desktop' in the Table
+    Majority People having 'internet_option' = Fiber_Optic' has 'medium_of_operation' = 'Smartphone', so replacing '?' by 'Smartphone' in the Table
+    Majority People having 'internet_option' = 'Mobile_Data' has 'medium_of_operation' = 'Smartphone', so replacing '?' by 'Smartphone' in the Table
+
+18. Approx 47.2% of the subscribers have 'medium_of_operation' == Smartphones
+    Approx 42.5% of the subscribers have 'medium_of_operation' == Desktop
+    Approx 10.4% of the subscribers have 'medium_of_operation' == Both
+
+19. Eqaul % of people have internet options as Wi-Fi, Fiber Optics and Mobile Data
+
+20. There are negative values in 'avg_time_spent', which cannot be possible as time spent cannot be in negative - OUTLIERS
+    Either we can drop the columns having negative values or Remove the '-' sign
+    In this case, we have removed the '-' sign.
+
+21. There are negative values in 'days_since_last_login', which cannot be possible as days cannot be in negative - OUTLIERS
+    Maximum people have 'days_since_last_login' between 5-25
+    Either we can drop the columns having negative values or Remove the '-' sign
+    In this case, we replaced the negative values with np.nan
+
+22. New shape of the data - (53890, 22)
+
+23. Majority 'avg_transaction_value' is between 1k - 50k
+
+24. We can replace the 'Error' term in the 'avg_frequency_login_days' column by mode of 'avg_frequency_login_days' i.e 17
+
+25. Changed the datatype of 'avg_frequency_login_days' from 'O' to float
+
+26. 'points_in_wallet' has negative values which are very less, so we replace the it by np.nan
+
+27. Majority people have 500-900 'points_in_wallet'
+
+28. 55% of the customer uses special discounts offered
+
+29. For all the customers whose 'past_complaint' value is 'No',their 'complaint_status' value is 'Not Applicable'
+
+30. For all the customers whose 'past_complaint' value is 'Yes', their 'complaint_status' value is either of 
+    [Solved in Follow-up, No Information Available, Unsolved, Solved]
+
+31. Customers with feedback - [ 'Products always in Stock', 'Quality Customer Care', 'User Friendly Website', 'Reasonable Price' ] 
+    sums to 15.1%. That means only 15.1% of the customers with this feedback has 'churn_risk_score' value < 3.¶
+
+32. Customers with feedback - ['Poor Website', 'No reason specified', 'Poor Product Quality','Poor Customer Service', 'Too many ads',] 
+    sums to 84.9%. That means 84.9% of the customers with this feedback has 'churn_risk_score' value >= 3.
+
+**********************************************************************************
+Before handling missing values, we will handle the categorical columns :
+**********************************************************************************
+1. Gender - {'F' : 0, 'M' : 1, 'Unknown' : 2}
+
+2. Region_Category - {'Town' : 0, 'City' : 1, 'Village' : 2}
+
+3. Membership_category - {'Basic Membership' : 0,'No Membership' : 1,'Gold Membership' : 2,'Silver Membership' : 3,
+                          'Premium Membership' : 4,'Platinum Membership' : 5}
+
+4.joined_through_referral - {'Yes' : 0, 'No' : 1}
+
+5. preferred_offer_types - {'Credit/Debit Card Offers' : 0, 'Gift Vouchers/Coupons' : 1, 'Without Offers' : 2}
+
+6. medium_of_operation - {'Smartphone' : 0,'Desktop' : 1, 'Both' : 2}
+
+7. internet_option - {'Fiber_Optic' : 0,'Wi-Fi' : 1,'Mobile_Data' : 2}
+
+8. used_special_discount, offer_application_preference, past_complaint - {'Yes' : 0,'No' : 1}
+
+9. complaint_status - {'Not Applicable' : 0,'Solved in Follow-up' : 1, 'No Information Available' : 2,'Unsolved' : 3, 'Solved' : 4}
+
+10. Feedback - Performed Label Encoding
+
+11. joining_date - created new integer columns from joining_date columns - joining_date_year, joining_date_month, joining_date_day  
+
+12. last_visit_time - created new integer columns from last_visit_time columns - last_visit_hour, last_visit_min
+
+**********************************************************************************
+Handling Missing Values using KNN Imputer :
+**********************************************************************************
+* From the Heat Map, we can see that few independent variables shows strong negative correlations(>0.7), so we will drop either one of the features
+  Therefore, dropping 'offer_application_preference', 'complaint_status' columns.
+
+**********************************************************************************
+Creating Model - Final Training Data - (36k) and Testing Data - (19k)
+**********************************************************************************
+
+# Using XGB = 73.24 (random_state = 100)
+# Using LGB = 73.03 (objective='multi', random_state=1, n_jobs=-1,learning_rate=0.15,n_estimators=100)
+# Using CAT Boost = 72.95 (verbose=0, iterations=100)
+# Using RFC = 72.46 (criterion='entropy', n_estimators=90, random_state=100)
+# Using KNN = 43.39
+# using SVM = 52.34 kernel='rbf', random_state = 10
+
+**********************************************************************************
+Hyperparameter Tuning
+**********************************************************************************
+
+# Using LGB = 73.64(try-1)
+# Using XGB = 73.60(try-4)
+# Using CB = 73.31(try -1)
+# Using RFC = 72.24(try-2)
+
+
+**********************************************************************************
+XGB-
+**********************************************************************************
+try 1 - 
+param_grid={ 
+    ' learning_rate':[1,0.5,0.1,0.01,0.001],
+    'max_depth': range(5,200,25),
+    'n_estimators':[10,50,100,200],
+    'min_child_weight' : range(1,20,1),
+    'gamma' : [0.1, 0.2, 0.3]   
+}
+
+Best Parameters:{'n_estimators': 200, 'min_child_weight': 2, 'max_depth': 80, 'gamma': 0.1, ' learning_rate': 1}
+acc:72.09
+**********************************************************************************
+try2 - 
+param_grid={
+   
+    ' learning_rate':[0.5,0.1,0.01,0.001,1],
+    'max_depth': range(5,200,25),
+    'n_estimators':[100,200,250,300,350],
+    'min_child_weight' : np.arange(1,20,2),
+    'gamma' : [0.1, 0.2, 0.3], 
+    'subsample': np.arange(0.5, 1, 0.1)
+}
+Best Parameters:{'subsample': 0.8999999999999999, 'n_estimators': 100, 'min_child_weight': 4, 'max_depth': 5, 'gamma': 0.1, ' learning_rate': 0.5}
+Acc:72.14
+**********************************************************************************
+try3 - 
+param_grid={
+   
+    ' learning_rate':[0.5,0.1,0.01,0.001,1],
+    'max_depth': range(5,200,25),
+    'n_estimators':range(50,300,50), #[100,200,250,300,350],
+    'min_child_weight' : np.arange(1,20,2),
+    'gamma' : [0.1, 0.2, 0.3], 
+    'subsample': np.arange(0.5, 1, 0.1)
+}
+Best Parameters:{'subsample': 0.8999999999999999, 'n_estimators': 50, 'min_child_weight': 7, 'max_depth': 5, 'gamma': 0.1, ' learning_rate': 0.5}
+Acc:72.40
+
+**********************************************************************************
+Try4 -
+param_grid={
+   
+    'learning_rate':[0.5,0.1,0.01,0.001,1],
+    'max_depth': sp_randint(5,200),
+    'n_estimators':sp_randint(10,300), #[100,200,250,300,350],
+    'min_child_weight' : sp_randint(1,20),
+    'gamma' : [0.1, 0.2, 0.3], 
+    'subsample': np.arange(0.5, 1, 0.1)
+}
+
+{'gamma': 0.1, 'learning_rate': 0.01, 'max_depth': 149, 'min_child_weight': 10, 'n_estimators': 103, 'subsample': 0.7}
+
+ACC: 73.60536565739486
+
+**********************************************************************************
+RANDOM FOREST CLASSIFIER - 
+**********************************************************************************
+Try 1 - 
+param_grid = {
+    "n_estimators" : [90,100,115,130],
+    'criterion': ['gini', 'entropy'],
+    'max_depth' : range(2,20,1),
+    'min_samples_leaf' : range(1,10,1),
+    'min_samples_split': range(2,10,1),
+    'max_features' : ['auto','log2']
+}
+Best Parameters:{'n_estimators': 100, 'min_samples_split': 4, 'min_samples_leaf': 1, 'max_features': 'auto', 'max_depth': 14, 'criterion': 'entropy'}
+Acc : 71.82
+**********************************************************************************
+Try 2 -
+Same param_grid 
+grid_rf = RandomizedSearchCV(estimator=rf_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 10, scoring='f1_macro')
+# changed random state to 100.
+
+Best Parameters - {'n_estimators': 115, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'log2', 'max_depth': 19, 'criterion': 'gini',
+			class_weight='balanced_subsample'}
+Acc:72.24
+
+**********************************************************************************
+LIGHT GRADIENT BOOSTING - 
+**********************************************************************************
+
+Try 1 - 
+from scipy.stats import randint as sp_randint
+from scipy.stats import uniform as sp_uniform
+param_grid = {
+    'num_leaves': sp_randint(6, 50), 
+             'min_child_samples': sp_randint(100, 500), 
+             'min_child_weight': [1e-5, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4],
+             'subsample': sp_uniform(loc=0.2, scale=0.8), 
+             'colsample_bytree': sp_uniform(loc=0.4, scale=0.6),
+             'reg_alpha': [0, 1e-1, 1, 2, 5, 7, 10, 50, 100],
+             'reg_lambda': [0, 1e-1, 1, 5, 10, 20, 50, 100]
+}
+
+grid_lgb = RandomizedSearchCV(estimator=lgb_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 12, scoring='f1_macro')#'neg_mean_absolute_error')
+
+Best Parameters - {'colsample_bytree': 0.9640178917734248, 'min_child_samples': 149, 'min_child_weight': 0.001, 'num_leaves': 20, 'reg_alpha': 50, 
+		'reg_lambda': 100, 'subsample': 0.34289945963435475}
+
+ACC:73.64745007443621
+
+**********************************************************************************
+Try2 -
+param_grid = {
+             'num_leaves': sp_randint(6, 50), 
+             'min_child_samples': sp_randint(100, 500), 
+             'min_child_weight': [1e-5, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4],
+             'subsample': sp_uniform(loc=0.2, scale=0.8), 
+             'colsample_bytree': sp_uniform(loc=0.4, scale=0.6),
+             'reg_alpha': [0, 1e-1, 1, 2, 5, 7, 10, 50, 100],
+             'reg_lambda': [0, 1e-1, 1, 5, 10, 20, 50, 100],
+    
+             'max_depth': range(5,200,25), #add
+             'n_estimators':range(10,300,50),  #add           
+}
+
+grid_lgb = RandomizedSearchCV(estimator=lgb_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 12, scoring='f1_macro')#'neg_mean_absolute_error')
+
+Best Parameters - {'colsample_bytree': 0.6590225101978731, 'max_depth': 80, 'min_child_samples': 235, 'min_child_weight': 0.001, 
+		'n_estimators': 60, 'num_leaves': 20, 'reg_alpha': 50, 'reg_lambda': 100, 'subsample': 0.34289945963435475}
+
+ACC - 72.75608853097143
+
+**********************************************************************************
+Try3 - 
+from scipy.stats import randint as sp_randint
+from scipy.stats import uniform as sp_uniform
+param_grid = {
+             'num_leaves': sp_randint(6, 50), 
+             'min_child_samples': sp_randint(100, 500), 
+             'min_child_weight': [1e-5, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4],
+             'subsample': sp_uniform(loc=0.2, scale=0.8), 
+             'colsample_bytree': sp_uniform(loc=0.4, scale=0.6),
+             'reg_alpha': [0, 1e-1, 1, 2, 5, 7, 10, 50, 100],
+             'reg_lambda': [0, 1e-1, 1, 5, 10, 20, 50, 100],
+    
+             'max_depth': sp_randint(5,200,25), #add
+             'n_estimators':sp_randint(10,300,50),  #add           
+}
+
+grid_lgb = RandomizedSearchCV(estimator=lgb_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 12, scoring='f1_macro')#'neg_mean_absolute_error')
+
+Best Parameters - {'colsample_bytree': 0.40684047275362206, 'max_depth': 100, 'min_child_samples': 231, 'min_child_weight': 1, 
+		'n_estimators': 267, 'num_leaves': 16, 'reg_alpha': 50, 'reg_lambda': 50, 'subsample': 0.6790871567005978}
+
+ACC - 73.21997251845067
+
+CatBoost Hyperparameter Tuning
+Clustering
+
+
+**********************************************************************************
+CATBOOST-
+**********************************************************************************
+Try 1 -
+param_grid = {'depth': [4, 7, 10],
+          'learning_rate' : [0.03, 0.1, 0.15],
+         'l2_leaf_reg': [1,4,9],
+         'iterations': [300]
+}
+
+grid_cb = RandomizedSearchCV(estimator=cb_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 12, scoring='f1_macro')
+
+Best Parameters - {'learning_rate': 0.1, 'l2_leaf_reg': 4, 'iterations': 300, 'depth': 4}
+
+ACC - 73.31820456080833
+
+Try 2 -
+param_grid = {#'depth': [4, 7, 10],
+          #'learning_rate' : [0.03, 0.1, 0.15],
+         'l2_leaf_reg': [1,4,9],
+         'iterations': range(50,300,50),
+#added
+    'learning_rate': np.arange(0.03, 0.1, 0.05),
+    'max_depth': np.arange(3, 15, 1),
+    'colsample_bylevel':  np.arange(0.3, 0.8, 0.1),
+    #'n_estimators': range(50,300,50),
+             }
+
+grid_cb = RandomizedSearchCV(estimator=cb_classifier , param_distributions = param_grid, n_jobs=-1, verbose = 3, cv = 10, 
+                             random_state = 100, n_iter = 12, scoring='f1_macro')
+
+Best Parameters - {'max_depth': 5, 'learning_rate': 0.08, 'l2_leaf_reg': 4, 'iterations': 100, 'colsample_bylevel': 0.7000000000000002}
+
+ACC - 72.9225688015307
+
+**********************************************************************************
+# best model - HE_HackathonSubmission_lgb_hypertuned_classifier.csv - 76.30572
+
+# bestmodel - 'HE_HackathonSubmission_05-04_cb_classifier.csv' - 76.38501****
+
+# Best Performer
+8:30 PM, 05-04-2021
+new_cb_classifier = cb.CatBoostClassifier(max_depth = 4,
+                                         learning_rate = 0.15,
+                                         l2_leaf_reg = 4,
+                                         iterations = 300,
+                                         )
+ACC - 73.91142133414877
+ACC HE - 76.93668
+
