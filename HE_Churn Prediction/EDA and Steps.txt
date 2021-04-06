@@ -133,7 +133,7 @@ Before handling missing values, we will handle the categorical columns :
 12. last_visit_time - created new integer columns from last_visit_time columns - last_visit_hour, last_visit_min
 
 **********************************************************************************
-Handling Missing Values using KNN Imputer :
+Handling Missing Values using KNN Imputer - but didn't show good accuracy, so went with mean and mode imputation methods
 **********************************************************************************
 * From the Heat Map, we can see that few independent variables shows strong negative correlations(>0.7), so we will drop either one of the features
   Therefore, dropping 'offer_application_preference', 'complaint_status' columns.
