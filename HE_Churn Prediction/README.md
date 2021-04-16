@@ -1,6 +1,6 @@
-### My rank - 21st out of 400
+### My rank - 36th out of 4097
 
-### My Score - 76.93668 (First place score - 77.46080)
+### My Score - 76.93668 (First place score - 78.08)
 
 ### Competition Link - https://www.hackerearth.com/challenges/competitive/hackerearth-machine-learning-challenge-predict-customer-churn/problems/
 
